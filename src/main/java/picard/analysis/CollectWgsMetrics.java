@@ -251,7 +251,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final long stopAfter = STOP_AFTER - 1;
         long counter = 0;
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = Executors.newFixedThreadPool(4);
         long start;
         long finish;
         long k = 0;
@@ -259,7 +259,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
         final BlockingQueue<List<Object[]>> que = new LinkedBlockingQueue<List<Object[]>>(10);
 
-        final Semaphore sem = new Semaphore(4);
+        final Semaphore sem = new Semaphore(5);
 
         List<Object[]> pairs = new ArrayList<>(25);
 
@@ -320,6 +320,12 @@ public class CollectWgsMetrics extends CommandLineProgram {
             pairs = new ArrayList<>(25);
 
 
+        }
+
+        try {
+            que.put(pairs);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         System.out.println("send");
@@ -460,6 +466,8 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
     protected class WgsMetricsCollector {
 
+        Object o = new Object();
+
         protected final long[] depthHistogramArray;
         private   final long[] baseQHistogramArray;
 
@@ -474,26 +482,34 @@ public class CollectWgsMetrics extends CommandLineProgram {
             this.coverageCap = coverageCap;
         }
 
-        public void addInfo(final SamLocusIterator.LocusInfo info, final ReferenceSequence ref) {
+         public void addInfo(final SamLocusIterator.LocusInfo info, final ReferenceSequence ref) {
 
-            // Figure out the coverage while not counting overlapping reads twice, and excluding various things
-            final HashSet<String> readNames = new HashSet<>(info.getRecordAndPositions().size());
-            int pileupSize = 0;
-            for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
+             synchronized (o) {
+                 // Figure out the coverage while not counting overlapping reads twice, and excluding various things
+                 final HashSet<String> readNames = new HashSet<>(info.getRecordAndPositions().size());
+                 int pileupSize = 0;
+                 for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
 
-                if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
-                        SequenceUtil.isNoCall(recs.getReadBase()))                  { ++basesExcludedByBaseq;   continue; }
-                if (!readNames.add(recs.getRecord().getReadName()))                 { ++basesExcludedByOverlap; continue; }
+                     if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
+                             SequenceUtil.isNoCall(recs.getReadBase())) {
+                         ++basesExcludedByBaseq;
+                         continue;
+                     }
+                     if (!readNames.add(recs.getRecord().getReadName())) {
+                         ++basesExcludedByOverlap;
+                         continue;
+                     }
 
-                pileupSize++;
-                if (pileupSize <= coverageCap) {
-                    baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
-                }
-            }
+                     pileupSize++;
+                     if (pileupSize <= coverageCap) {
+                         baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
+                     }
+                 }
 
-            final int depth = Math.min(pileupSize, coverageCap);
-            if (depth < pileupSize) basesExcludedByCapping += pileupSize - coverageCap;
-            depthHistogramArray[depth]++;
+                 final int depth = Math.min(pileupSize, coverageCap);
+                 if (depth < pileupSize) basesExcludedByCapping += pileupSize - coverageCap;
+                 depthHistogramArray[depth]++;
+             }
         }
 
         public void addToMetricsFile(final MetricsFile<WgsMetrics, Integer> file,
