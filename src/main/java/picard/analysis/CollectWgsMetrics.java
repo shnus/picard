@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.IntStream;
 
@@ -393,16 +394,21 @@ public class CollectWgsMetrics extends CommandLineProgram {
         protected final long[] depthHistogramArray;
         private   final long[] baseQHistogramArray;
         private AtomicLongArray dHA;
+        private AtomicLongArray bHA;
 
         private long basesExcludedByBaseq = 0;
+        private AtomicLong bEB = new AtomicLong(0);
         private long basesExcludedByOverlap = 0;
+        private AtomicLong bEBO = new AtomicLong(0);
         private long basesExcludedByCapping = 0;
+        private AtomicLong bEBC = new AtomicLong(0);
         protected final int coverageCap;
 
         public WgsMetricsCollector(final int coverageCap) {
             depthHistogramArray = new long[coverageCap + 1];
             dHA = new AtomicLongArray(coverageCap+1);
             baseQHistogramArray = new long[Byte.MAX_VALUE];
+            bHA = new AtomicLongArray(Byte.MAX_VALUE);
             this.coverageCap = coverageCap;
         }
 
@@ -416,30 +422,43 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
                  if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
                          SequenceUtil.isNoCall(recs.getReadBase())) {
-                     ++basesExcludedByBaseq;
+                     bEB.getAndIncrement();
+                     //++basesExcludedByBaseq;
                      continue;
                  }
                  if (!readNames.add(recs.getRecord().getReadName())) {
-                     ++basesExcludedByOverlap;
+                     bEBO.getAndIncrement();
+                     //++basesExcludedByOverlap;
                      continue;
                  }
 
                  pileupSize++;
                  if (pileupSize <= coverageCap) {
-                     baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
+                     bHA.getAndIncrement(recs.getRecord().getBaseQualities()[recs.getOffset()]);
+                     //baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
                  }
              }
 
              final int depth = Math.min(pileupSize, coverageCap);
-             if (depth < pileupSize) basesExcludedByCapping += pileupSize - coverageCap;
+             if (depth < pileupSize) {
+                 bEBC.addAndGet(pileupSize-coverageCap);
+                 //basesExcludedByCapping += pileupSize - coverageCap;
+             }
              dHA.getAndIncrement(depth);
              //depthHistogramArray[depth]++;
 
          }
 
         public void assign(){
+            basesExcludedByBaseq = bEB.get();
+            basesExcludedByOverlap = bEBO.get();
+            basesExcludedByCapping = bEBC.get();
             for(int i = 0; i < dHA.length(); i++){
                 depthHistogramArray[i] = dHA.get(i);
+            }
+
+            for(int i = 0; i < bHA.length(); i++){
+                baseQHistogramArray[i] = bHA.get(i);
             }
         }
 
