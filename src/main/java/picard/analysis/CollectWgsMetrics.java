@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.IntStream;
 
 /**
@@ -205,6 +206,8 @@ public class CollectWgsMetrics extends CommandLineProgram {
         new CollectWgsMetrics().instanceMainWithExit(args);
     }
 
+
+
     @Override
    protected int doWork() {
         IOUtil.assertFileIsReadable(INPUT);
@@ -251,7 +254,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final long stopAfter = STOP_AFTER - 1;
         long counter = 0;
 
-        ExecutorService service = Executors.newFixedThreadPool(4);
+        ExecutorService service = Executors.newFixedThreadPool(3);
         long start;
         long finish;
         long k = 0;
@@ -346,6 +349,8 @@ public class CollectWgsMetrics extends CommandLineProgram {
             e.printStackTrace();
         }
 
+        collector.assign();
+
         final MetricsFile<WgsMetrics, Integer> out = getMetricsFile();
         collector.addToMetricsFile(out, INCLUDE_BQ_HISTOGRAM, dupeFilter, mapqFilter, pairFilter);
         out.write(OUTPUT);
@@ -355,89 +360,6 @@ public class CollectWgsMetrics extends CommandLineProgram {
         return 0;
     }
 
-/*
-    @Override
-    protected int doWork() {
-        IOUtil.assertFileIsReadable(INPUT);
-        IOUtil.assertFileIsWritable(OUTPUT);
-        IOUtil.assertFileIsReadable(REFERENCE_SEQUENCE);
-        if (INTERVALS != null) {
-            IOUtil.assertFileIsReadable(INTERVALS);
-        }
-
-        // it doesn't make sense for the locus accumulation cap to be lower than the coverage cap
-        if (LOCUS_ACCUMULATION_CAP < COVERAGE_CAP) {
-            log.warn("Setting the LOCUS_ACCUMULATION_CAP to be equal to the COVERAGE_CAP (" + COVERAGE_CAP + ") because it should not be lower");
-            LOCUS_ACCUMULATION_CAP = COVERAGE_CAP;
-        }
-
-        // Setup all the inputs
-        final ProgressLogger progress = new ProgressLogger(log, 10000000, "Processed", "loci");
-        final ReferenceSequenceFileWalker refWalker = new ReferenceSequenceFileWalker(REFERENCE_SEQUENCE);
-        final SamReader in = SamReaderFactory.makeDefault().referenceSequence(REFERENCE_SEQUENCE).open(INPUT);
-        final SamLocusIterator iterator = getLocusIterator(in);
-        this.header = in.getFileHeader();
-
-        final List<SamRecordFilter> filters = new ArrayList<>();
-        final CountingFilter dupeFilter = new CountingDuplicateFilter();
-        final CountingFilter mapqFilter = new CountingMapQFilter(MINIMUM_MAPPING_QUALITY);
-        final CountingPairedFilter pairFilter = new CountingPairedFilter();
-        // The order in which filters are added matters!
-        filters.add(new SecondaryAlignmentFilter()); // Not a counting filter because we never want to count reads twice
-        filters.add(mapqFilter);
-        filters.add(dupeFilter);
-        if (!COUNT_UNPAIRED) {
-            filters.add(pairFilter);
-        }
-        iterator.setSamFilters(filters);
-        iterator.setEmitUncoveredLoci(true);
-        iterator.setMappingQualityScoreCutoff(0); // Handled separately because we want to count bases
-        iterator.setQualityScoreCutoff(0);        // Handled separately because we want to count bases
-        iterator.setIncludeNonPfReads(false);
-        iterator.setMaxReadsToAccumulatePerLocus(LOCUS_ACCUMULATION_CAP);
-
-        final WgsMetricsCollector collector = getCollector(COVERAGE_CAP);
-
-        final boolean usingStopAfter = STOP_AFTER > 0;
-        final long stopAfter = STOP_AFTER - 1;
-        long counter = 0;
-        long k = 0;
-        // Loop through all the loci
-        long s1;
-        long s2;
-        long s3;
-        long s4=0;
-        long s;
-        while (iterator.hasNext()) {
-            s1 = System.nanoTime();;
-            s=s1-s4;
-            k++;
-            final SamLocusIterator.LocusInfo info = iterator.next();
-            final ReferenceSequence ref = refWalker.get(info.getSequenceIndex());
-            s2 = System.nanoTime();;
-            // Check that the reference is not N
-            final byte base = ref.getBases()[info.getPosition() - 1];
-
-
-            // add to the collector
-            s3 = System.nanoTime();;
-            collector.addInfo(info, ref);
-
-            s4 = System.nanoTime();
-            // Record progress and perhaps stop
-            progress.record(info.getSequenceName(), info.getPosition());
-            if (usingStopAfter && ++counter > stopAfter) break;
-            if(k%100000==0)
-                System.out.println(String.valueOf(s)+" "+String.valueOf(s2-s1)+" "+String.valueOf(s3-s2)+" "+String.valueOf(s4-s3)+" "+String.valueOf(System.nanoTime()-s4));
-        }
-
-
-        final MetricsFile<WgsMetrics, Integer> out = getMetricsFile();
-        collector.addToMetricsFile(out, INCLUDE_BQ_HISTOGRAM, dupeFilter, mapqFilter, pairFilter);
-        out.write(OUTPUT);
-
-        return 0;
-    }*/
 
 
     protected SAMFileHeader getSamFileHeader() {
@@ -470,6 +392,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
         protected final long[] depthHistogramArray;
         private   final long[] baseQHistogramArray;
+        private AtomicLongArray dHA;
 
         private long basesExcludedByBaseq = 0;
         private long basesExcludedByOverlap = 0;
@@ -478,38 +401,46 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
         public WgsMetricsCollector(final int coverageCap) {
             depthHistogramArray = new long[coverageCap + 1];
+            dHA = new AtomicLongArray(coverageCap+1);
             baseQHistogramArray = new long[Byte.MAX_VALUE];
             this.coverageCap = coverageCap;
         }
 
          public void addInfo(final SamLocusIterator.LocusInfo info, final ReferenceSequence ref) {
 
-             synchronized (o) {
-                 // Figure out the coverage while not counting overlapping reads twice, and excluding various things
-                 final HashSet<String> readNames = new HashSet<>(info.getRecordAndPositions().size());
-                 int pileupSize = 0;
-                 for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
 
-                     if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
-                             SequenceUtil.isNoCall(recs.getReadBase())) {
-                         ++basesExcludedByBaseq;
-                         continue;
-                     }
-                     if (!readNames.add(recs.getRecord().getReadName())) {
-                         ++basesExcludedByOverlap;
-                         continue;
-                     }
+             // Figure out the coverage while not counting overlapping reads twice, and excluding various things
+             final HashSet<String> readNames = new HashSet<>(info.getRecordAndPositions().size());
+             int pileupSize = 0;
+             for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
 
-                     pileupSize++;
-                     if (pileupSize <= coverageCap) {
-                         baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
-                     }
+                 if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
+                         SequenceUtil.isNoCall(recs.getReadBase())) {
+                     ++basesExcludedByBaseq;
+                     continue;
+                 }
+                 if (!readNames.add(recs.getRecord().getReadName())) {
+                     ++basesExcludedByOverlap;
+                     continue;
                  }
 
-                 final int depth = Math.min(pileupSize, coverageCap);
-                 if (depth < pileupSize) basesExcludedByCapping += pileupSize - coverageCap;
-                 depthHistogramArray[depth]++;
+                 pileupSize++;
+                 if (pileupSize <= coverageCap) {
+                     baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
+                 }
              }
+
+             final int depth = Math.min(pileupSize, coverageCap);
+             if (depth < pileupSize) basesExcludedByCapping += pileupSize - coverageCap;
+             dHA.getAndIncrement(depth);
+             //depthHistogramArray[depth]++;
+
+         }
+
+        public void assign(){
+            for(int i = 0; i < dHA.length(); i++){
+                depthHistogramArray[i] = dHA.get(i);
+            }
         }
 
         public void addToMetricsFile(final MetricsFile<WgsMetrics, Integer> file,
