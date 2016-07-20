@@ -40,6 +40,7 @@ import htsjdk.samtools.util.ProgressLogger;
 import htsjdk.samtools.util.QualityUtil;
 import htsjdk.samtools.util.SamLocusIterator;
 import htsjdk.samtools.util.SequenceUtil;
+import htsjdk.variant.variantcontext.writer.BCF2FieldEncoder;
 import picard.cmdline.CommandLineProgram;
 import picard.cmdline.CommandLineProgramProperties;
 import picard.cmdline.Option;
@@ -52,15 +53,13 @@ import picard.filter.CountingPairedFilter;
 import picard.util.MathUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Computes a number of metrics that are useful for evaluating coverage and performance of whole genome sequencing experiments.
@@ -256,7 +255,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final long stopAfter = STOP_AFTER - 1;
         long counter = 0;
         int COUNT_OF_PAIRS = 25;
-        int COUNT_OF_PROCESSING_THREADS = 2;
+        int COUNT_OF_PROCESSING_THREADS = 1;
         int COUNt_OF_SEMS = 5;
         int BLOCKING_SIZE = 10;
 
@@ -412,9 +411,32 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
 
              // Figure out the coverage while not counting overlapping reads twice, and excluding various things
-             final HashSet<String> readNames = new HashSet<>(info.getRecordAndPositions().size());
-             int pileupSize = 0;
-             for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
+             HashSet<String> readNamesNotSync = new HashSet<>(info.getRecordAndPositions().size());
+             Set readNames = Collections.synchronizedSet(readNamesNotSync);
+             AtomicLong pileupSize = new AtomicLong(0);
+             //System.out.println(1);
+             Stream<SamLocusIterator.RecordAndOffset> stream = info.getRecordAndPositions().parallelStream();
+             //System.out.println(2);
+             stream.forEach((recs)->{
+                 boolean f;
+                 synchronized (readNames) {
+                     f = readNames.add(recs.getRecord().getReadName());
+                 }
+                 if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
+                         SequenceUtil.isNoCall(recs.getReadBase())) {
+                     bEB.getAndIncrement();
+
+                 } else if (!f) {
+                     bEBO.getAndIncrement();
+                 } else {
+                     pileupSize.getAndIncrement();
+                     if (pileupSize.get() <= coverageCap) {
+                         bHA.getAndIncrement(recs.getRecord().getBaseQualities()[recs.getOffset()]);
+                     }
+                 }
+             });
+            // System.out.println(3);
+             /*for (final SamLocusIterator.RecordAndOffset recs : info.getRecordAndPositions()) {
 
                  if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
                          SequenceUtil.isNoCall(recs.getReadBase())) {
@@ -430,11 +452,11 @@ public class CollectWgsMetrics extends CommandLineProgram {
                  if (pileupSize <= coverageCap) {
                      bHA.getAndIncrement(recs.getRecord().getBaseQualities()[recs.getOffset()]);
                  }
-             }
+             }*/
 
-             final int depth = Math.min(pileupSize, coverageCap);
-             if (depth < pileupSize) {
-                 bEBC.addAndGet(pileupSize-coverageCap);
+             final int depth = Math.min((int)pileupSize.get(), coverageCap);
+             if (depth < pileupSize.get()) {
+                 bEBC.addAndGet(pileupSize.get()-coverageCap);
              }
              dHA.getAndIncrement(depth);
 
