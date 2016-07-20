@@ -164,6 +164,7 @@ public class CollectWgsMetricsWithNonZeroCoverage extends CollectWgsMetrics {
             return depthHistogram;
         }
 
+
         public boolean areHistogramsEmpty() {
             return (null == depthHistogram || depthHistogram.isEmpty());
         }

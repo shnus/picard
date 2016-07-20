@@ -211,6 +211,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
 
     @Override
    protected int doWork() {
+        long start = System.nanoTime();
         IOUtil.assertFileIsReadable(INPUT);
         IOUtil.assertFileIsWritable(OUTPUT);
         IOUtil.assertFileIsReadable(REFERENCE_SEQUENCE);
@@ -254,76 +255,71 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final boolean usingStopAfter = STOP_AFTER > 0;
         final long stopAfter = STOP_AFTER - 1;
         long counter = 0;
+        int COUNT_OF_PAIRS = 25;
+        int COUNT_OF_PROCESSING_THREADS = 2;
+        int COUNt_OF_SEMS = 5;
+        int BLOCKING_SIZE = 10;
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
-        long start;
-        long finish;
-        long k = 0;
-        // Loop through all the loci
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_PROCESSING_THREADS+1);
 
-        final BlockingQueue<List<Object[]>> que = new LinkedBlockingQueue<List<Object[]>>(10);
+        final BlockingQueue<List<Object[]>> que = new LinkedBlockingQueue<>(BLOCKING_SIZE);
 
-        final Semaphore sem = new Semaphore(5);
+        final Semaphore sem = new Semaphore(COUNt_OF_SEMS);
 
-        List<Object[]> pairs = new ArrayList<>(25);
+        List<Object[]> pairs = new ArrayList<>(COUNT_OF_PAIRS);
 
         final AtomicBoolean f = new AtomicBoolean(true);
 
-        service.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        final List<Object[]> tmpPairs = que.take();
-                        if (tmpPairs.size() == 0) {
-                            System.out.println("breaked");
-                            break;
-                        }
-                        sem.acquire();
-                        service.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                for (Object[] obj : tmpPairs) {
-                                    collector.addInfo((SamLocusIterator.LocusInfo) obj[0], (ReferenceSequence) obj[1]);
-                                }
-
-                                sem.release();
-                            }
-                        });
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        service.execute(() -> {
+            while (true) {
+                try {
+                    final List<Object[]> tmpPairs = que.take();
+                    if (tmpPairs.size() == 0) {
+                        System.out.println("breaked");
+                        break;
                     }
+                    sem.acquire();
+                    service.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (Object[] obj : tmpPairs) {
+                                collector.addInfo((SamLocusIterator.LocusInfo) obj[0], (ReferenceSequence) obj[1]);
+                            }
 
+                            sem.release();
+                        }
+                    });
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+
             }
         });
 
 
         long count = 0;
         while (iterator.hasNext()) {
+
             count++;
             if (count % 10000000 == 0)
                 System.out.println(count);
+
             final SamLocusIterator.LocusInfo info = iterator.next();
             final ReferenceSequence ref = refWalker.get(info.getSequenceIndex());
             final byte base = ref.getBases()[info.getPosition() - 1];
             if (SequenceUtil.isNoCall(base)) continue;
 
-
             pairs.add(new Object[]{info, ref});
-            if (pairs.size() < 25) continue;
 
-            //System.out.println("put");
+            if (pairs.size() < COUNT_OF_PAIRS) continue;
             try {
                 que.put(pairs);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            pairs = new ArrayList<>(25);
-
-
+            pairs = new ArrayList<>(COUNT_OF_PAIRS);
         }
 
         try {
@@ -332,9 +328,8 @@ public class CollectWgsMetrics extends CommandLineProgram {
             e.printStackTrace();
         }
 
-        System.out.println("send");
 
-
+        //POISON PILL
         try {
             que.put(new ArrayList<>());
         } catch (InterruptedException e) {
@@ -355,7 +350,8 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final MetricsFile<WgsMetrics, Integer> out = getMetricsFile();
         collector.addToMetricsFile(out, INCLUDE_BQ_HISTOGRAM, dupeFilter, mapqFilter, pairFilter);
         out.write(OUTPUT);
-        System.out.println("writed to file");
+
+        System.out.println("writed to file. Final time = "+String.valueOf(System.nanoTime()-start));
 
 
         return 0;
@@ -423,29 +419,24 @@ public class CollectWgsMetrics extends CommandLineProgram {
                  if (recs.getBaseQuality() < MINIMUM_BASE_QUALITY ||
                          SequenceUtil.isNoCall(recs.getReadBase())) {
                      bEB.getAndIncrement();
-                     //++basesExcludedByBaseq;
                      continue;
                  }
                  if (!readNames.add(recs.getRecord().getReadName())) {
                      bEBO.getAndIncrement();
-                     //++basesExcludedByOverlap;
                      continue;
                  }
 
                  pileupSize++;
                  if (pileupSize <= coverageCap) {
                      bHA.getAndIncrement(recs.getRecord().getBaseQualities()[recs.getOffset()]);
-                     //baseQHistogramArray[recs.getRecord().getBaseQualities()[recs.getOffset()]]++;
                  }
              }
 
              final int depth = Math.min(pileupSize, coverageCap);
              if (depth < pileupSize) {
                  bEBC.addAndGet(pileupSize-coverageCap);
-                 //basesExcludedByCapping += pileupSize - coverageCap;
              }
              dHA.getAndIncrement(depth);
-             //depthHistogramArray[depth]++;
 
          }
 
