@@ -255,55 +255,19 @@ public class CollectWgsMetrics extends CommandLineProgram {
         final boolean usingStopAfter = STOP_AFTER > 0;
         final long stopAfter = STOP_AFTER - 1;
         long counter = 0;
-        int COUNT_OF_PAIRS = 25;
+        int COUNT_OF_PAIRS = 50;
         int COUNT_OF_PROCESSING_THREADS = 2;
-        int COUNt_OF_SEMS = 5;
-        int BLOCKING_SIZE = 10;
+        int COUNT_OF_SEMS = 5;
 
-        ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_PROCESSING_THREADS+1);
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_PROCESSING_THREADS)
 
-        final BlockingQueue<List<Object[]>> que = new LinkedBlockingQueue<>(BLOCKING_SIZE);
-
-        final Semaphore sem = new Semaphore(COUNt_OF_SEMS);
+        final Semaphore sem = new Semaphore(COUNT_OF_SEMS);
 
         List<Object[]> pairs = new ArrayList<>(COUNT_OF_PAIRS);
 
         final AtomicBoolean f = new AtomicBoolean(true);
 
-        service.execute(() -> {
-            while (true) {
-                try {
-                    final List<Object[]> tmpPairs = que.take();
-                    if (tmpPairs.size() == 0) {
-                        System.out.println("breaked");
-                        break;
-                    }
-                    sem.acquire();
-                    service.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (Object[] obj : tmpPairs) {
-                                collector.addInfo((SamLocusIterator.LocusInfo) obj[0], (ReferenceSequence) obj[1]);
-                            }
-
-                            sem.release();
-                        }
-                    });
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-
-        long count = 0;
         while (iterator.hasNext()) {
-
-            count++;
-            if (count % 10000000 == 0)
-                System.out.println(count);
 
             final SamLocusIterator.LocusInfo info = iterator.next();
             final ReferenceSequence ref = refWalker.get(info.getSequenceIndex());
@@ -313,27 +277,27 @@ public class CollectWgsMetrics extends CommandLineProgram {
             pairs.add(new Object[]{info, ref});
 
             if (pairs.size() < COUNT_OF_PAIRS) continue;
+
             try {
-                que.put(pairs);
+                sem.acquire();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+            final List<Object[]> finalPairs = pairs;
+            service.submit(new Runnable() {
+                final List<Object[]> tmpPairs = finalPairs;
+                @Override
+                public void run() {
+                    for (Object[] obj : tmpPairs) {
+                        collector.addInfo((SamLocusIterator.LocusInfo) obj[0], (ReferenceSequence) obj[1]);
+                    }
+
+                    sem.release();
+                }
+            });
+
             pairs = new ArrayList<>(COUNT_OF_PAIRS);
-        }
-
-        try {
-            que.put(pairs);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        //POISON PILL
-        try {
-            que.put(new ArrayList<>());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
 

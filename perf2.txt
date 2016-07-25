@@ -1,0 +1,1868 @@
+JAVA PROFILE 1.0.1, created Mon Jul 25 15:03:36 2016
+
+Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+  - Neither the name of Oracle nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Header for -agentlib:hprof (or -Xrunhprof) ASCII Output (JDK 5.0 JVMTI based)
+
+WARNING!  This file format is under development, and is subject to
+change without notice.
+
+This file contains the following types of records:
+
+THREAD START
+THREAD END      mark the lifetime of Java threads
+
+TRACE           represents a Java stack trace.  Each trace consists
+                of a series of stack frames.  Other records refer to
+                TRACEs to identify (1) where object allocations have
+                taken place, (2) the frames in which GC roots were
+                found, and (3) frequently executed methods.
+
+HEAP DUMP       is a complete snapshot of all live objects in the Java
+                heap.  Following distinctions are made:
+
+                ROOT    root set as determined by GC
+                CLS     classes 
+                OBJ     instances
+                ARR     arrays
+
+SITES           is a sorted list of allocation sites.  This identifies
+                the most heavily allocated object types, and the TRACE
+                at which those allocations occurred.
+
+CPU SAMPLES     is a statistical profile of program execution.  The VM
+                periodically samples all running threads, and assigns
+                a quantum to active TRACEs in those threads.  Entries
+                in this record are TRACEs ranked by the percentage of
+                total quanta they consumed; top-ranked TRACEs are
+                typically hot spots in the program.
+
+CPU TIME        is a profile of program execution obtained by measuring
+                the time spent in individual methods (excluding the time
+                spent in callees), as well as by counting the number of
+                times each method is called. Entries in this record are
+                TRACEs ranked by the percentage of total CPU time. The
+                "count" field indicates the number of times each TRACE 
+                is invoked.
+
+MONITOR TIME    is a profile of monitor contention obtained by measuring
+                the time spent by a thread waiting to enter a monitor.
+                Entries in this record are TRACEs ranked by the percentage
+                of total monitor contention time and a brief description
+                of the monitor.  The "count" field indicates the number of 
+                times the monitor was contended at that TRACE.
+
+MONITOR DUMP    is a complete snapshot of all the monitors and threads in 
+                the System.
+
+HEAP DUMP, SITES, CPU SAMPLES|TIME and MONITOR DUMP|TIME records are generated 
+at program exit.  They can also be obtained during program execution by typing 
+Ctrl-\ (on Solaris) or by typing Ctrl-Break (on Win32).
+
+--------
+
+THREAD START (obj=50000182, id = 200002, name="HPROF gc_finish watcher", group="system")
+THREAD START (obj=50000182, id = 200001, name="main", group="main")
+THREAD START (obj=50000182, id = 200003, name="pool-1-thread-1", group="main")
+THREAD START (obj=50000182, id = 200004, name="pool-1-thread-2", group="main")
+THREAD START (obj=50000182, id = 200008, name="SIGINT handler", group="system")
+THREAD END (id = 200008)
+TRACE 313778:
+	htsjdk.samtools.util.FastLineReader.atEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.advanceToEobOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313779:
+	htsjdk.samtools.util.FastLineReader.advanceToEobOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313755:
+	htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.atEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.advanceToEobOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln(FastLineReader.java:Unknown line)
+TRACE 314145:
+	java.util.concurrent.locks.LockSupport.park(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.take(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.getTask(<Unknown Source>:Unknown line)
+TRACE 313780:
+	htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313773:
+	htsjdk.samtools.util.FastLineReader.atEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.skipNewlines(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313794:
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313774:
+	htsjdk.samtools.util.FastLineReader.skipNewlines(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313793:
+	java.lang.CharacterDataLatin1.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313776:
+	htsjdk.samtools.util.FastLineReader.peekByte(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313795:
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313777:
+	htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313771:
+	htsjdk.samtools.util.FastLineReader.eof(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313772:
+	htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.atEoln(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.skipNewlines(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313730:
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 303687:
+	java.lang.CharacterDataLatin1.getProperties(<Unknown Source>:Unknown line)
+	java.lang.CharacterDataLatin1.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+TRACE 313792:
+	java.lang.CharacterData.of(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+TRACE 313781:
+	htsjdk.samtools.util.StringUtil.byteToChar(StringUtil.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+TRACE 313775:
+	htsjdk.samtools.util.FastLineReader.eof(FastLineReader.java:Unknown line)
+	htsjdk.samtools.util.FastLineReader.peekByte(FastLineReader.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.readSequence(FastaSequenceFile.java:Unknown line)
+	htsjdk.samtools.reference.FastaSequenceFile.nextSequence(FastaSequenceFile.java:Unknown line)
+TRACE 314053:
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+	java.util.concurrent.FutureTask.run(<Unknown Source>:Unknown line)
+TRACE 313722:
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 314033:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getRecordAndPositions(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 314032:
+	java.util.Collections.unmodifiableList(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getRecordAndPositions(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 314038:
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 314031:
+	java.util.Collections$UnmodifiableRandomAccessList.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections.unmodifiableList(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getRecordAndPositions(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 313685:
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 314042:
+	java.util.Collections$UnmodifiableCollection$1.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection.iterator(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 313726:
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303547:
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+TRACE 314030:
+	java.util.Collections$UnmodifiableList.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableRandomAccessList.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections.unmodifiableList(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getRecordAndPositions(SamLocusIterator.java:Unknown line)
+TRACE 307778:
+	java.util.ArrayList$Itr.<init>(<Unknown Source>:Unknown line)
+	java.util.ArrayList.iterator(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection$1.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection.iterator(<Unknown Source>:Unknown line)
+TRACE 313689:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313735:
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313699:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313712:
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 309986:
+	sun.nio.ch.FileDispatcherImpl.close(<Unknown Source>:Unknown line)
+	sun.nio.ch.FileChannelImpl.implCloseChannel(<Unknown Source>:Unknown line)
+	java.nio.channels.spi.AbstractInterruptibleChannel.close(<Unknown Source>:Unknown line)
+	sun.nio.fs.WindowsFileSystemProvider.checkReadAccess(<Unknown Source>:Unknown line)
+TRACE 303544:
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 302510:
+	java.lang.ClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.security.SecureClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+TRACE 313618:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+TRACE 313697:
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 303542:
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+TRACE 314040:
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 313591:
+	java.util.ArrayList.isEmpty(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 313679:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313703:
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.getMaxSequenceIndex(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 314035:
+	java.util.Collections$UnmodifiableCollection.size(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 313718:
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 314026:
+	java.util.ArrayList$Itr.hasNext(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+	java.util.concurrent.FutureTask.run(<Unknown Source>:Unknown line)
+TRACE 303580:
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+	picard.cmdline.PicardCommandLine.extractCommandLineProgram(PicardCommandLine.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313741:
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313716:
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 313706:
+	htsjdk.samtools.SAMSequenceDictionary.size(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 313734:
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 314051:
+	java.util.concurrent.atomic.AtomicLongArray.getAndAdd(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.getAndIncrement(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 313708:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+TRACE 314060:
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+	java.util.concurrent.FutureTask.run(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+TRACE 311191:
+	sun.nio.ch.FileDispatcherImpl.read(<Unknown Source>:Unknown line)
+	sun.nio.ch.IOUtil.readIntoNativeBuffer(<Unknown Source>:Unknown line)
+	sun.nio.ch.IOUtil.read(<Unknown Source>:Unknown line)
+	sun.nio.ch.FileChannelImpl.read(<Unknown Source>:Unknown line)
+TRACE 314029:
+	java.util.ArrayList$Itr.next(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+	java.util.concurrent.FutureTask.run(<Unknown Source>:Unknown line)
+TRACE 314049:
+	java.util.concurrent.atomic.AtomicLongArray.checkedByteOffset(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.getAndAdd(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.getAndIncrement(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 314045:
+	java.util.ArrayList$Itr.hasNext(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection$1.hasNext(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 313724:
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313710:
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 313698:
+	htsjdk.samtools.SAMSequenceRecord.getSequenceIndex(SAMSequenceRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 314046:
+	java.util.Collections$UnmodifiableCollection$1.hasNext(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 303549:
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+	picard.cmdline.PicardCommandLine.extractCommandLineProgram(PicardCommandLine.java:Unknown line)
+TRACE 301744:
+	java.lang.String.startsWith(<Unknown Source>:Unknown line)
+	sun.misc.MetaIndex.mayContain(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+TRACE 307770:
+	java.util.Collections$UnmodifiableCollection.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableList.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableRandomAccessList.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections.unmodifiableList(<Unknown Source>:Unknown line)
+TRACE 303513:
+	java.util.zip.ZipFile$ZipEntryIterator.hasNext(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.hasMoreElements(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+TRACE 313736:
+	java.util.ArrayList.isEmpty(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 313681:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 314039:
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 313733:
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313720:
+	java.util.ArrayList.<init>(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.<init>(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 313677:
+	java.util.ArrayList.rangeCheck(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 302489:
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 313688:
+	java.util.ArrayList.elementData(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313713:
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313729:
+	java.util.ArrayList.remove(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 314189:
+	java.lang.ref.Finalizer.runFinalizer(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer.access$100(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer$FinalizerThread.run(<Unknown Source>:Unknown line)
+TRACE 303552:
+	java.lang.String.startsWith(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+	picard.cmdline.PicardCommandLine.extractCommandLineProgram(PicardCommandLine.java:Unknown line)
+TRACE 301743:
+	java.lang.String.startsWith(<Unknown Source>:Unknown line)
+	java.lang.String.startsWith(<Unknown Source>:Unknown line)
+	sun.misc.MetaIndex.mayContain(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+TRACE 313686:
+	java.util.ArrayList.isEmpty(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313719:
+	java.util.AbstractList.<init>(<Unknown Source>:Unknown line)
+	java.util.ArrayList.<init>(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.<init>(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 314043:
+	java.util.Collections$UnmodifiableCollection.iterator(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 313721:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.<init>(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313598:
+	htsjdk.samtools.SAMRecord.getReferenceIndex(SAMRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313740:
+	java.util.ArrayList.remove(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 313725:
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313709:
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+TRACE 313596:
+	htsjdk.samtools.util.SamLocusIterator.samHasMore(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303535:
+	java.nio.charset.CharsetDecoder.reset(<Unknown Source>:Unknown line)
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+TRACE 303511:
+	java.util.zip.ZipFile.access$200(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.hasNext(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.hasMoreElements(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+TRACE 314048:
+	java.util.concurrent.atomic.AtomicLongArray.byteOffset(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.checkedByteOffset(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.getAndAdd(<Unknown Source>:Unknown line)
+	java.util.concurrent.atomic.AtomicLongArray.getAndIncrement(<Unknown Source>:Unknown line)
+TRACE 313691:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.isEmpty(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 314028:
+	java.util.ArrayList.access$100(<Unknown Source>:Unknown line)
+	java.util.ArrayList$Itr.next(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 313701:
+	java.util.ArrayList.size(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.size(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.getMaxSequenceIndex(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 313702:
+	htsjdk.samtools.SAMSequenceDictionary.size(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.getMaxSequenceIndex(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 313806:
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313717:
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 313715:
+	htsjdk.samtools.SamReader$PrimitiveSamReaderToSamReaderAdapter.getFileHeader(SamReader.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 312604:
+	java.util.ArrayList.elementData(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+TRACE 313694:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 313678:
+	java.util.ArrayList.elementData(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313737:
+	htsjdk.samtools.util.LocusImpl.<init>(LocusImpl.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 302575:
+	java.util.concurrent.ConcurrentHashMap.transfer(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.addCount(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.putVal(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.putIfAbsent(<Unknown Source>:Unknown line)
+TRACE 311825:
+	java.nio.HeapByteBuffer._get(<Unknown Source>:Unknown line)
+	java.nio.Bits.getIntL(<Unknown Source>:Unknown line)
+	java.nio.Bits.getInt(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+TRACE 303545:
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 303514:
+	java.util.zip.ZipFile$ZipEntryIterator.hasMoreElements(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+	picard.cmdline.PicardCommandLine.extractCommandLineProgram(PicardCommandLine.java:Unknown line)
+TRACE 303698:
+	sun.reflect.generics.parser.SignatureParser.parseIdentifier(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parsePackageNameAndSimpleClassTypeSignature(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseClassTypeSignature(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(<Unknown Source>:Unknown line)
+TRACE 314037:
+	java.util.AbstractSet.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 312603:
+	java.util.ArrayList.rangeCheck(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+TRACE 312965:
+	htsjdk.samtools.util.BinaryCodec.readByteBuffer(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readInt(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+TRACE 301751:
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.findClass(<Unknown Source>:Unknown line)
+TRACE 303541:
+	java.lang.String.<init>(<Unknown Source>:Unknown line)
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+TRACE 314044:
+	java.util.ArrayList.access$100(<Unknown Source>:Unknown line)
+	java.util.ArrayList$Itr.hasNext(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection$1.hasNext(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 311959:
+	htsjdk.samtools.util.BlockCompressedInputStream.read(BlockCompressedInputStream.java:Unknown line)
+	java.io.DataInputStream.read(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readBytesOrFewer(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readBytes(BinaryCodec.java:Unknown line)
+TRACE 302482:
+	java.net.URLStreamHandler.toExternalForm(<Unknown Source>:Unknown line)
+	java.net.URL.toExternalForm(<Unknown Source>:Unknown line)
+	java.net.URL.toString(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.defineClassSourceLocation(<Unknown Source>:Unknown line)
+TRACE 301420:
+	java.lang.String.concat(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.findClass(<Unknown Source>:Unknown line)
+TRACE 314034:
+	java.util.ArrayList.size(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection.size(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+TRACE 303536:
+	java.nio.charset.CharsetDecoder.maxCharsPerByte(<Unknown Source>:Unknown line)
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+TRACE 313383:
+	htsjdk.samtools.Cigar.isValid(Cigar.java:Unknown line)
+	htsjdk.samtools.SAMUtils.validateCigar(SAMUtils.java:Unknown line)
+	htsjdk.samtools.SAMRecord.validateCigar(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMRecord.getCigar(BAMRecord.java:Unknown line)
+TRACE 303516:
+	java.util.zip.ZipFile.access$200(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 301738:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getNextLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+TRACE 313743:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 302197:
+	java.util.zip.Inflater.inflate(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+TRACE 313617:
+	java.util.ArrayList.size(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.getReferenceSequence(SamLocusIterator.java:Unknown line)
+TRACE 302512:
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 301737:
+	java.util.ArrayList.elementData(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getNextLoader(<Unknown Source>:Unknown line)
+TRACE 313807:
+	htsjdk.samtools.reference.ReferenceSequence.getBases(ReferenceSequence.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313602:
+	htsjdk.samtools.SAMRecord.getReadFailsVendorQualityCheckFlag(SAMRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313700:
+	htsjdk.samtools.SAMFileHeader.getSequenceDictionary(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.getMaxSequenceIndex(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 312714:
+	java.util.ArrayList.ensureExplicitCapacity(<Unknown Source>:Unknown line)
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 301759:
+	java.net.URLClassLoader.findClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 313496:
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.advance(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.next(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.next(BAMFileReader.java:Unknown line)
+TRACE 314036:
+	java.util.AbstractCollection.<init>(<Unknown Source>:Unknown line)
+	java.util.AbstractSet.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 313731:
+	java.util.ArrayList.rangeCheckForAdd(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303548:
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+TRACE 314052:
+	java.util.concurrent.atomic.AtomicLongArray.getAndIncrement(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 311976:
+	java.nio.Bits.getIntL(<Unknown Source>:Unknown line)
+	java.nio.Bits.getInt(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readInt(BinaryCodec.java:Unknown line)
+TRACE 313732:
+	java.util.ArrayList.ensureExplicitCapacity(<Unknown Source>:Unknown line)
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313601:
+	htsjdk.samtools.SAMRecord.getMappingQuality(SAMRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313597:
+	htsjdk.samtools.util.PeekableIterator.peek(PeekableIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 301967:
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.checkResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+TRACE 301740:
+	sun.misc.URLClassPath.getNextLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 303538:
+	sun.nio.cs.UTF_8$Decoder.decode(<Unknown Source>:Unknown line)
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+TRACE 301742:
+	java.lang.String.endsWith(<Unknown Source>:Unknown line)
+	sun.misc.MetaIndex.mayContain(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+TRACE 303689:
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseIdentifier(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parsePackageNameAndSimpleClassTypeSignature(<Unknown Source>:Unknown line)
+TRACE 313723:
+	java.util.ArrayList.ensureExplicitCapacity(<Unknown Source>:Unknown line)
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 302022:
+	java.net.URLClassLoader.getAndVerifyPackage(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.definePackageInternal(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+TRACE 311038:
+	java.util.AbstractMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+TRACE 302612:
+	java.net.URLStreamHandler.hostsEqual(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.file.Handler.hostsEqual(<Unknown Source>:Unknown line)
+	java.net.URLStreamHandler.sameFile(<Unknown Source>:Unknown line)
+	java.net.URLStreamHandler.equals(<Unknown Source>:Unknown line)
+TRACE 314174:
+	java.lang.ref.Reference.tryHandlePending(<Unknown Source>:Unknown line)
+	java.lang.ref.Reference$ReferenceHandler.run(<Unknown Source>:Unknown line)
+TRACE 312715:
+	java.util.ArrayList.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 313704:
+	htsjdk.samtools.SAMFileHeader.getSequenceDictionary(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition(WholeGenomeReferenceSequenceMask.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo(SamLocusIterator.java:Unknown line)
+TRACE 303518:
+	java.util.zip.ZipFile.access$400(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 303543:
+	java.util.zip.ZipEntry.setExtra0(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+TRACE 313361:
+	htsjdk.samtools.SAMUtils.getAlignmentBlocks(SAMUtils.java:Unknown line)
+	htsjdk.samtools.SAMRecord.getAlignmentBlocks(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.validateCigar(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMRecord.getCigar(BAMRecord.java:Unknown line)
+TRACE 313196:
+	java.nio.HeapByteBuffer.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readNullTerminatedString(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readSingleValue(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readTags(BinaryTagCodec.java:Unknown line)
+TRACE 312971:
+	htsjdk.samtools.util.BinaryCodec.readInt(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.advance(BAMFileReader.java:Unknown line)
+TRACE 313204:
+	java.nio.ByteBuffer.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readNullTerminatedString(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readSingleValue(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readTags(BinaryTagCodec.java:Unknown line)
+TRACE 303523:
+	java.util.zip.ZipFile.access$500(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 312970:
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readInt(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+TRACE 313429:
+	htsjdk.samtools.SAMRecord.getAlignmentEnd(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.computeIndexingBin(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.advance(BAMFileReader.java:Unknown line)
+TRACE 313209:
+	htsjdk.samtools.BinaryTagCodec.readNullTerminatedString(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readSingleValue(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BinaryTagCodec.readTags(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecord.decodeAttributes(BAMRecord.java:Unknown line)
+TRACE 313403:
+	htsjdk.samtools.SAMUtils.validateCigar(SAMUtils.java:Unknown line)
+	htsjdk.samtools.SAMRecord.validateCigar(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMRecord.getCigar(BAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.getAlignmentEnd(SAMRecord.java:Unknown line)
+TRACE 303524:
+	java.util.zip.ZipEntry.<init>(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+TRACE 302569:
+	java.util.concurrent.ConcurrentHashMap.tabAt(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.transfer(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.addCount(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.putVal(<Unknown Source>:Unknown line)
+TRACE 312995:
+	htsjdk.samtools.util.BinaryCodec.readByteBuffer(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readUShort(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+TRACE 313003:
+	java.nio.HeapByteBuffer.putShort(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readUShort(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+TRACE 303693:
+	java.lang.StringBuilder.append(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseIdentifier(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parsePackageNameAndSimpleClassTypeSignature(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseClassTypeSignature(<Unknown Source>:Unknown line)
+TRACE 307777:
+	java.util.ArrayList$Itr.<init>(<Unknown Source>:Unknown line)
+	java.util.ArrayList$Itr.<init>(<Unknown Source>:Unknown line)
+	java.util.ArrayList.iterator(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection$1.<init>(<Unknown Source>:Unknown line)
+TRACE 301966:
+	sun.net.www.protocol.jar.Handler.parseURL(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.checkResource(<Unknown Source>:Unknown line)
+TRACE 301745:
+	sun.misc.MetaIndex.mayContain(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 313594:
+	java.util.ArrayList.isEmpty(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 312716:
+	java.util.ArrayList.add(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 313599:
+	java.lang.Integer.intValue(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303546:
+	java.util.zip.ZipFile.access$1000(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 303540:
+	java.util.Arrays.copyOfRange(<Unknown Source>:Unknown line)
+	java.lang.String.<init>(<Unknown Source>:Unknown line)
+	java.util.zip.ZipCoder.toString(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+TRACE 313010:
+	htsjdk.samtools.util.BinaryCodec.readUShort(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.advance(BAMFileReader.java:Unknown line)
+TRACE 313245:
+	htsjdk.samtools.SAMRecord.isValidReferenceIndexAndPosition(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValidReferenceIndexAndPosition(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.advance(BAMFileReader.java:Unknown line)
+TRACE 314025:
+	java.util.ArrayList.access$100(<Unknown Source>:Unknown line)
+	java.util.ArrayList$Itr.hasNext(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 301406:
+	java.lang.ClassLoader.findBootstrapClassOrNull(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 312964:
+	java.nio.Buffer.position(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readByteBuffer(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readInt(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+TRACE 314041:
+	java.util.ArrayList.iterator(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection$1.<init>(<Unknown Source>:Unknown line)
+	java.util.Collections$UnmodifiableCollection.iterator(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo(CollectWgsMetrics.java:Unknown line)
+TRACE 303550:
+	java.util.zip.ZipEntry.getName(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+	picard.cmdline.PicardCommandLine.extractCommandLineProgram(PicardCommandLine.java:Unknown line)
+TRACE 303510:
+	java.util.zip.ZipFile.ensureOpen(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$200(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.hasNext(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.hasMoreElements(<Unknown Source>:Unknown line)
+TRACE 301141:
+	java.util.zip.ZipFile.access$1400(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipFileInputStream.read(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipFileInflaterInputStream.fill(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+TRACE 313220:
+	htsjdk.samtools.BinaryTagCodec.readTags(BinaryTagCodec.java:Unknown line)
+	htsjdk.samtools.BAMRecord.decodeAttributes(BAMRecord.java:Unknown line)
+	htsjdk.samtools.BAMRecord.getAttribute(BAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+TRACE 303525:
+	java.util.zip.ZipCoder.isUTF8(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$900(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+TRACE 313075:
+	htsjdk.samtools.BAMRecord.<init>(BAMRecord.java:Unknown line)
+	htsjdk.samtools.DefaultSAMRecordFactory.createBAMRecord(DefaultSAMRecordFactory.java:Unknown line)
+	htsjdk.samtools.BAMRecordCodec.decode(BAMRecordCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader$BAMFileIterator.getNextRecord(BAMFileReader.java:Unknown line)
+TRACE 313907:
+	java.util.ArrayList.size(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+	picard.cmdline.PicardCommandLine.instanceMain(PicardCommandLine.java:Unknown line)
+TRACE 301898:
+	java.lang.Character.toLowerCase(<Unknown Source>:Unknown line)
+	java.lang.Character.toLowerCase(<Unknown Source>:Unknown line)
+	java.lang.String.regionMatches(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+TRACE 302204:
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+TRACE 313683:
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getPosition(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 301954:
+	java.lang.StringBuilder.append(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.jar.Handler.parseURL(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+TRACE 314271:
+	sun.misc.Signal.dispatch(<Unknown Source>:Unknown line)
+TRACE 313001:
+	java.nio.Bits.putShortL(<Unknown Source>:Unknown line)
+	java.nio.Bits.putShort(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.putShort(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readUShort(BinaryCodec.java:Unknown line)
+TRACE 311826:
+	java.nio.Bits.makeInt(<Unknown Source>:Unknown line)
+	java.nio.Bits.getIntL(<Unknown Source>:Unknown line)
+	java.nio.Bits.getInt(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+TRACE 314064:
+	java.util.concurrent.FutureTask.set(<Unknown Source>:Unknown line)
+	java.util.concurrent.FutureTask.run(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.run(<Unknown Source>:Unknown line)
+TRACE 313603:
+	htsjdk.samtools.SAMRecord.getAlignmentStart(SAMRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 300286:
+	java.lang.Math.min(<Unknown Source>:Unknown line)
+	java.util.Arrays.copyOfRange(<Unknown Source>:Unknown line)
+	java.lang.String.<init>(<Unknown Source>:Unknown line)
+	java.lang.String.substring(<Unknown Source>:Unknown line)
+TRACE 313632:
+	java.util.AbstractCollection.<init>(<Unknown Source>:Unknown line)
+	java.util.AbstractList.<init>(<Unknown Source>:Unknown line)
+	java.util.ArrayList.<init>(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.<init>(SamLocusIterator.java:Unknown line)
+TRACE 302596:
+	java.util.jar.Attributes.get(<Unknown Source>:Unknown line)
+	java.util.jar.Attributes.getValue(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.isSealed(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.getAndVerifyPackage(<Unknown Source>:Unknown line)
+TRACE 301736:
+	java.util.ArrayList.rangeCheck(<Unknown Source>:Unknown line)
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getNextLoader(<Unknown Source>:Unknown line)
+TRACE 313407:
+	htsjdk.samtools.BAMRecord.getCigar(BAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.getAlignmentEnd(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.computeIndexingBin(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+TRACE 301752:
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.findClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 313428:
+	htsjdk.samtools.Cigar.getReferenceLength(Cigar.java:Unknown line)
+	htsjdk.samtools.SAMRecord.getAlignmentEnd(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.computeIndexingBin(SAMRecord.java:Unknown line)
+	htsjdk.samtools.SAMRecord.isValid(SAMRecord.java:Unknown line)
+TRACE 300039:
+	java.lang.Math.min(<Unknown Source>:Unknown line)
+	java.util.Arrays.copyOf(<Unknown Source>:Unknown line)
+	java.lang.AbstractStringBuilder.expandCapacity(<Unknown Source>:Unknown line)
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(<Unknown Source>:Unknown line)
+TRACE 313682:
+	htsjdk.samtools.util.LocusImpl.getSequenceIndex(LocusImpl.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 301894:
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.String.regionMatches(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+TRACE 311039:
+	java.lang.Float.isNaN(<Unknown Source>:Unknown line)
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashMap.<init>(<Unknown Source>:Unknown line)
+	java.util.HashSet.<init>(<Unknown Source>:Unknown line)
+TRACE 303515:
+	java.util.zip.ZipFile.ensureOpen(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.access$200(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.next(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile$ZipEntryIterator.nextElement(<Unknown Source>:Unknown line)
+TRACE 313693:
+	htsjdk.samtools.SAMSequenceRecord.getSequenceIndex(SAMSequenceRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+TRACE 313695:
+	htsjdk.samtools.util.LocusImpl.getPosition(LocusImpl.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 301943:
+	java.lang.String.indexOf(<Unknown Source>:Unknown line)
+	java.lang.String.indexOf(<Unknown Source>:Unknown line)
+	sun.net.www.ParseUtil.canonizeString(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.jar.Handler.parseURL(<Unknown Source>:Unknown line)
+TRACE 301953:
+	java.lang.AbstractStringBuilder.append(<Unknown Source>:Unknown line)
+	java.lang.StringBuilder.append(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.jar.Handler.parseURL(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+TRACE 301996:
+	java.util.HashMap.get(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.getPackage(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.getAndVerifyPackage(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.definePackageInternal(<Unknown Source>:Unknown line)
+TRACE 314010:
+	java.util.concurrent.ThreadPoolExecutor$Worker.tryRelease(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.release(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.unlock(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+TRACE 313727:
+	java.util.ArrayList.rangeCheck(<Unknown Source>:Unknown line)
+	java.util.ArrayList.remove(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 313738:
+	java.util.ArrayList.rangeCheck(<Unknown Source>:Unknown line)
+	java.util.ArrayList.remove(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 313739:
+	java.util.ArrayList.elementData(<Unknown Source>:Unknown line)
+	java.util.ArrayList.remove(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303564:
+	picard.cmdline.ClassFinder.toClassName(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.handleItem(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.scanJar(ClassFinder.java:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+TRACE 313805:
+	htsjdk.samtools.reference.ReferenceSequence.getContigIndex(ReferenceSequence.java:Unknown line)
+	htsjdk.samtools.reference.ReferenceSequenceFileWalker.get(ReferenceSequenceFileWalker.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 302195:
+	java.util.zip.Inflater.ensureOpen(<Unknown Source>:Unknown line)
+	java.util.zip.Inflater.inflate(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+TRACE 301337:
+	sun.misc.ASCIICaseInsensitiveComparator.compare(<Unknown Source>:Unknown line)
+	sun.misc.ASCIICaseInsensitiveComparator.compare(<Unknown Source>:Unknown line)
+	java.util.jar.Attributes$Name.equals(<Unknown Source>:Unknown line)
+	java.util.HashMap.getNode(<Unknown Source>:Unknown line)
+TRACE 302190:
+	sun.misc.URLClassPath$JarLoader$2.getContentLength(<Unknown Source>:Unknown line)
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+TRACE 301123:
+	java.util.zip.ZStreamRef.address(<Unknown Source>:Unknown line)
+	java.util.zip.Inflater.ensureOpen(<Unknown Source>:Unknown line)
+	java.util.zip.Inflater.inflate(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+TRACE 302061:
+	java.net.URLClassLoader.definePackageInternal(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 313912:
+	java.util.concurrent.Semaphore$NonfairSync.tryAcquireShared(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireSharedInterruptibly(<Unknown Source>:Unknown line)
+	java.util.concurrent.Semaphore.acquire(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 302040:
+	java.util.HashMap.get(<Unknown Source>:Unknown line)
+	java.util.jar.Attributes.get(<Unknown Source>:Unknown line)
+	java.util.jar.Attributes.getValue(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.definePackage(<Unknown Source>:Unknown line)
+TRACE 313996:
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.getState(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock$Sync.tryRelease(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.release(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock.unlock(<Unknown Source>:Unknown line)
+TRACE 313999:
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.setState(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock$Sync.tryRelease(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.release(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock.unlock(<Unknown Source>:Unknown line)
+TRACE 303559:
+	java.util.Arrays.copyOfRange(<Unknown Source>:Unknown line)
+	java.lang.String.<init>(<Unknown Source>:Unknown line)
+	java.lang.String.substring(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.toClassName(ClassFinder.java:Unknown line)
+TRACE 313742:
+	htsjdk.samtools.SAMSequenceRecord.getSequenceIndex(SAMSequenceRecord.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex(SamLocusIterator.java:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 302218:
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.access$100(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 301000:
+	java.nio.DirectLongBufferU.ix(<Unknown Source>:Unknown line)
+	java.nio.DirectLongBufferU.put(<Unknown Source>:Unknown line)
+	sun.misc.PerfCounter.add(<Unknown Source>:Unknown line)
+	sun.misc.PerfCounter.addElapsedTimeFrom(<Unknown Source>:Unknown line)
+TRACE 302464:
+	java.lang.String.lastIndexOf(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.checkCerts(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.preDefineClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.defineClass(<Unknown Source>:Unknown line)
+TRACE 303688:
+	java.lang.CharacterDataLatin1.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseIdentifier(<Unknown Source>:Unknown line)
+TRACE 314015:
+	java.util.concurrent.ThreadPoolExecutor$Worker.tryAcquire(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.lock(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+TRACE 303690:
+	java.lang.Character.isWhitespace(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseIdentifier(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parsePackageNameAndSimpleClassTypeSignature(<Unknown Source>:Unknown line)
+	sun.reflect.generics.parser.SignatureParser.parseClassTypeSignature(<Unknown Source>:Unknown line)
+TRACE 314027:
+	java.util.ArrayList$Itr.checkForComodification(<Unknown Source>:Unknown line)
+	java.util.ArrayList$Itr.next(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics$1.run(CollectWgsMetrics.java:Unknown line)
+	java.util.concurrent.Executors$RunnableAdapter.call(<Unknown Source>:Unknown line)
+TRACE 301101:
+	java.lang.ref.Finalizer.register(<Unknown Source>:Unknown line)
+	java.io.InputStream.<init>(<Unknown Source>:Unknown line)
+	java.io.FilterInputStream.<init>(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.<init>(<Unknown Source>:Unknown line)
+TRACE 314054:
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.getState(<Unknown Source>:Unknown line)
+	java.util.concurrent.Semaphore$Sync.tryReleaseShared(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.releaseShared(<Unknown Source>:Unknown line)
+	java.util.concurrent.Semaphore.release(<Unknown Source>:Unknown line)
+TRACE 300825:
+	java.lang.String.charAt(<Unknown Source>:Unknown line)
+	java.io.WinNTFileSystem.normalize(<Unknown Source>:Unknown line)
+	java.io.WinNTFileSystem.normalize(<Unknown Source>:Unknown line)
+	java.io.File.<init>(<Unknown Source>:Unknown line)
+TRACE 300804:
+	java.lang.ClassLoader.findNative(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.<clinit>(<Unknown Source>:Unknown line)
+	sun.launcher.LauncherHelper.getMainClassFromJar(<Unknown Source>:Unknown line)
+	sun.launcher.LauncherHelper.checkAndLoadMain(<Unknown Source>:Unknown line)
+TRACE 301946:
+	java.lang.String.endsWith(<Unknown Source>:Unknown line)
+	sun.net.www.ParseUtil.canonizeString(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.jar.Handler.parseURL(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+TRACE 302480:
+	java.security.ProtectionDomain.getCodeSource(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.defineClassSourceLocation(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.defineClass(<Unknown Source>:Unknown line)
+	java.security.SecureClassLoader.defineClass(<Unknown Source>:Unknown line)
+TRACE 302616:
+	java.net.URL.equals(<Unknown Source>:Unknown line)
+	java.security.CodeSource.equals(<Unknown Source>:Unknown line)
+	java.util.HashMap.getNode(<Unknown Source>:Unknown line)
+	java.util.HashMap.get(<Unknown Source>:Unknown line)
+TRACE 309038:
+	java.io.FileOutputStream.write(<Unknown Source>:Unknown line)
+	java.io.BufferedOutputStream.write(<Unknown Source>:Unknown line)
+	java.io.PrintStream.write(<Unknown Source>:Unknown line)
+	sun.nio.cs.StreamEncoder.writeBytes(<Unknown Source>:Unknown line)
+TRACE 309246:
+	java.net.InetAddress.loadImpl(<Unknown Source>:Unknown line)
+	java.net.InetAddressImplFactory.create(<Unknown Source>:Unknown line)
+	java.net.InetAddress.<clinit>(<Unknown Source>:Unknown line)
+	picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:Unknown line)
+TRACE 301923:
+	java.lang.AbstractStringBuilder.ensureCapacityInternal(<Unknown Source>:Unknown line)
+	java.lang.AbstractStringBuilder.append(<Unknown Source>:Unknown line)
+	java.lang.StringBuilder.append(<Unknown Source>:Unknown line)
+	sun.net.www.protocol.jar.Handler.parseContextSpec(<Unknown Source>:Unknown line)
+TRACE 310147:
+	java.text.DigitList.<init>(<Unknown Source>:Unknown line)
+	java.text.DecimalFormat.<init>(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.AbstractProgressLogger.<init>(AbstractProgressLogger.java:Unknown line)
+	htsjdk.samtools.util.ProgressLogger.<init>(ProgressLogger.java:Unknown line)
+TRACE 310464:
+	java.lang.StringBuilder.toString(<Unknown Source>:Unknown line)
+	java.util.Currency$1.run(<Unknown Source>:Unknown line)
+	java.util.Currency$1.run(<Unknown Source>:Unknown line)
+	java.util.Currency.<clinit>(<Unknown Source>:Unknown line)
+TRACE 314066:
+	java.util.concurrent.ThreadPoolExecutor.afterExecute(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.run(<Unknown Source>:Unknown line)
+	java.lang.Thread.run(<Unknown Source>:Unknown line)
+TRACE 313692:
+	htsjdk.samtools.util.LocusImpl.getSequenceIndex(LocusImpl.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+TRACE 301274:
+	java.lang.String.charAt(<Unknown Source>:Unknown line)
+	sun.misc.ASCIICaseInsensitiveComparator.lowerCaseHashCode(<Unknown Source>:Unknown line)
+	java.util.jar.Attributes$Name.hashCode(<Unknown Source>:Unknown line)
+	java.util.HashMap.hash(<Unknown Source>:Unknown line)
+TRACE 301900:
+	java.lang.String.regionMatches(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	java.net.URL.<init>(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.checkResource(<Unknown Source>:Unknown line)
+TRACE 313684:
+	htsjdk.samtools.util.LocusImpl.getPosition(LocusImpl.java:Unknown line)
+	htsjdk.samtools.util.LocusComparator.compare(LocusComparator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.next(SamLocusIterator.java:Unknown line)
+	htsjdk.samtools.util.SamLocusIterator.hasNext(SamLocusIterator.java:Unknown line)
+TRACE 302529:
+	java.nio.DirectLongBufferU.put(<Unknown Source>:Unknown line)
+	sun.misc.PerfCounter.add(<Unknown Source>:Unknown line)
+	sun.misc.PerfCounter.increment(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 301892:
+	java.lang.CharacterData.of(<Unknown Source>:Unknown line)
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.String.regionMatches(<Unknown Source>:Unknown line)
+TRACE 311966:
+	java.io.DataInputStream.read(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readBytesOrFewer(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readBytes(BinaryCodec.java:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readByteBuffer(BinaryCodec.java:Unknown line)
+TRACE 314074:
+	java.util.concurrent.locks.ReentrantLock$Sync.nonfairTryAcquire(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock$NonfairSync.tryAcquire(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireInterruptibly(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock.lockInterruptibly(<Unknown Source>:Unknown line)
+TRACE 312094:
+	java.util.regex.Pattern$Slice.match(<Unknown Source>:Unknown line)
+	java.util.regex.Pattern$Start.match(<Unknown Source>:Unknown line)
+	java.util.regex.Matcher.search(<Unknown Source>:Unknown line)
+	java.util.regex.Matcher.find(<Unknown Source>:Unknown line)
+TRACE 301889:
+	sun.net.www.ParseUtil.encodePath(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.checkResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$JarLoader.getResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+TRACE 303453:
+	java.net.URI$Parser.parseHierarchical(<Unknown Source>:Unknown line)
+	java.net.URI$Parser.parse(<Unknown Source>:Unknown line)
+	java.net.URI.<init>(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+TRACE 312194:
+	java.lang.String.substring(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.StringUtil.split(StringUtil.java:Unknown line)
+	htsjdk.samtools.SAMTextHeaderCodec$ParsedHeaderLine.<init>(SAMTextHeaderCodec.java:Unknown line)
+	htsjdk.samtools.SAMTextHeaderCodec.decode(SAMTextHeaderCodec.java:Unknown line)
+TRACE 312560:
+	htsjdk.samtools.SAMTextHeaderCodec.decode(SAMTextHeaderCodec.java:Unknown line)
+	htsjdk.samtools.BAMFileReader.readHeader(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader.<init>(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader.<init>(BAMFileReader.java:Unknown line)
+TRACE 301756:
+	java.lang.Exception.<init>(<Unknown Source>:Unknown line)
+	java.lang.ReflectiveOperationException.<init>(<Unknown Source>:Unknown line)
+	java.lang.ClassNotFoundException.<init>(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader.findClass(<Unknown Source>:Unknown line)
+TRACE 303229:
+	java.lang.ClassLoader.getBootstrapResources(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.getResources(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.getResources(<Unknown Source>:Unknown line)
+	picard.cmdline.ClassFinder.find(ClassFinder.java:Unknown line)
+TRACE 312611:
+	htsjdk.samtools.BAMFileReader.readHeader(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader.<init>(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.BAMFileReader.<init>(BAMFileReader.java:Unknown line)
+	htsjdk.samtools.SamReaderFactory$SamReaderFactoryImpl.open(SamReaderFactory.java:Unknown line)
+TRACE 314091:
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.fullyRelease(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.take(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.getTask(<Unknown Source>:Unknown line)
+TRACE 314121:
+	java.util.concurrent.locks.AbstractOwnableSynchronizer.getExclusiveOwnerThread(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock$Sync.isHeldExclusively(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.signal(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.offer(<Unknown Source>:Unknown line)
+TRACE 314132:
+	java.util.concurrent.locks.ReentrantLock$Sync.isHeldExclusively(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.signal(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.signalNotEmpty(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.offer(<Unknown Source>:Unknown line)
+TRACE 314143:
+	java.util.concurrent.locks.LockSupport.unpark(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.unparkSuccessor(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.AbstractQueuedSynchronizer.release(<Unknown Source>:Unknown line)
+	java.util.concurrent.locks.ReentrantLock.unlock(<Unknown Source>:Unknown line)
+TRACE 314150:
+	java.util.concurrent.LinkedBlockingQueue.signalNotEmpty(<Unknown Source>:Unknown line)
+	java.util.concurrent.LinkedBlockingQueue.offer(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.execute(<Unknown Source>:Unknown line)
+	java.util.concurrent.AbstractExecutorService.submit(<Unknown Source>:Unknown line)
+TRACE 314151:
+	java.util.concurrent.LinkedBlockingQueue.offer(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.execute(<Unknown Source>:Unknown line)
+	java.util.concurrent.AbstractExecutorService.submit(<Unknown Source>:Unknown line)
+	picard.analysis.CollectWgsMetrics.doWork(CollectWgsMetrics.java:Unknown line)
+TRACE 303027:
+	java.io.BufferedReader.readLine(<Unknown Source>:Unknown line)
+	sun.misc.MetaIndex.registerDirectory(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$BootClassPathHolder$1.run(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$BootClassPathHolder$1.run(<Unknown Source>:Unknown line)
+TRACE 314168:
+	java.util.concurrent.LinkedBlockingQueue.take(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.getTask(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.run(<Unknown Source>:Unknown line)
+TRACE 314169:
+	java.util.concurrent.ThreadPoolExecutor.getTask(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor.runWorker(<Unknown Source>:Unknown line)
+	java.util.concurrent.ThreadPoolExecutor$Worker.run(<Unknown Source>:Unknown line)
+	java.lang.Thread.run(<Unknown Source>:Unknown line)
+TRACE 314176:
+	java.lang.ref.ReferenceQueue.enqueue(<Unknown Source>:Unknown line)
+	java.lang.ref.Reference.tryHandlePending(<Unknown Source>:Unknown line)
+	java.lang.ref.Reference$ReferenceHandler.run(<Unknown Source>:Unknown line)
+TRACE 314181:
+	java.lang.ref.ReferenceQueue.remove(<Unknown Source>:Unknown line)
+	java.lang.ref.ReferenceQueue.remove(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer$FinalizerThread.run(<Unknown Source>:Unknown line)
+TRACE 314183:
+	java.lang.ref.Finalizer.hasBeenFinalized(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer.runFinalizer(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer.access$100(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer$FinalizerThread.run(<Unknown Source>:Unknown line)
+TRACE 313007:
+	java.nio.Bits.getIntL(<Unknown Source>:Unknown line)
+	java.nio.Bits.getInt(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+	htsjdk.samtools.util.BinaryCodec.readUShort(BinaryCodec.java:Unknown line)
+TRACE 302640:
+	java.lang.Class.getMethod0(<Unknown Source>:Unknown line)
+	java.lang.Class.getMethod(<Unknown Source>:Unknown line)
+	sun.launcher.LauncherHelper.validateMainClass(<Unknown Source>:Unknown line)
+	sun.launcher.LauncherHelper.checkAndLoadMain(<Unknown Source>:Unknown line)
+TRACE 313017:
+	java.util.ArrayList.get(<Unknown Source>:Unknown line)
+	htsjdk.samtools.SAMSequenceDictionary.getSequence(SAMSequenceDictionary.java:Unknown line)
+	htsjdk.samtools.SAMFileHeader.getSequence(SAMFileHeader.java:Unknown line)
+	htsjdk.samtools.SAMRecord.resolveNameFromIndex(SAMRecord.java:Unknown line)
+TRACE 301481:
+	java.lang.AbstractStringBuilder.append(<Unknown Source>:Unknown line)
+	java.lang.StringBuffer.append(<Unknown Source>:Unknown line)
+	java.net.URLStreamHandler.toExternalForm(<Unknown Source>:Unknown line)
+	java.net.URL.toExternalForm(<Unknown Source>:Unknown line)
+TRACE 302619:
+	java.lang.String.equals(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.putVal(<Unknown Source>:Unknown line)
+	java.util.concurrent.ConcurrentHashMap.putIfAbsent(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.checkCerts(<Unknown Source>:Unknown line)
+TRACE 314192:
+	sun.misc.VM.addFinalRefCount(<Unknown Source>:Unknown line)
+	java.lang.ref.ReferenceQueue.reallyPoll(<Unknown Source>:Unknown line)
+	java.lang.ref.ReferenceQueue.remove(<Unknown Source>:Unknown line)
+	java.lang.ref.ReferenceQueue.remove(<Unknown Source>:Unknown line)
+TRACE 301397:
+	java.lang.ClassLoader.getClassLoadingLock(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 301395:
+	java.lang.ClassLoader.findLoadedClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 314195:
+	java.util.zip.ZipFile$ZipFileInputStream.finalize(<Unknown Source>:Unknown line)
+	java.lang.System$2.invokeFinalize(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer.runFinalizer(<Unknown Source>:Unknown line)
+	java.lang.ref.Finalizer.access$100(<Unknown Source>:Unknown line)
+TRACE 301387:
+	java.util.concurrent.ConcurrentHashMap.putIfAbsent(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.getClassLoadingLock(<Unknown Source>:Unknown line)
+	java.lang.ClassLoader.loadClass(<Unknown Source>:Unknown line)
+	sun.misc.Launcher$AppClassLoader.loadClass(<Unknown Source>:Unknown line)
+TRACE 300358:
+	java.lang.CharacterDataLatin1.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.Character.toUpperCase(<Unknown Source>:Unknown line)
+	java.lang.ProcessEnvironment$NameComparator.compare(<Unknown Source>:Unknown line)
+TRACE 313285:
+	java.nio.Bits.getIntL(<Unknown Source>:Unknown line)
+	java.nio.Bits.getInt(<Unknown Source>:Unknown line)
+	java.nio.HeapByteBuffer.getInt(<Unknown Source>:Unknown line)
+	htsjdk.samtools.BinaryCigarCodec.decode(BinaryCigarCodec.java:Unknown line)
+TRACE 302196:
+	java.util.zip.ZStreamRef.address(<Unknown Source>:Unknown line)
+	java.util.zip.Inflater.inflate(<Unknown Source>:Unknown line)
+	java.util.zip.InflaterInputStream.read(<Unknown Source>:Unknown line)
+	sun.misc.Resource.getBytes(<Unknown Source>:Unknown line)
+TRACE 301109:
+	java.util.WeakHashMap.expungeStaleEntries(<Unknown Source>:Unknown line)
+	java.util.WeakHashMap.getTable(<Unknown Source>:Unknown line)
+	java.util.WeakHashMap.put(<Unknown Source>:Unknown line)
+	java.util.zip.ZipFile.getInputStream(<Unknown Source>:Unknown line)
+CPU TIME (ms) BEGIN (total = 156700) Mon Jul 25 15:06:05 2016
+rank   self  accum   count trace method
+   1 37.14% 37.14% 26935580 313778 htsjdk.samtools.util.FastLineReader.atEoln
+   2 21.41% 58.55%  528203 313779 htsjdk.samtools.util.FastLineReader.advanceToEobOrEoln
+   3 15.48% 74.03% 26935590 313755 htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty
+   4  5.41% 79.44%     660 314145 java.util.concurrent.locks.LockSupport.park
+   5  1.62% 81.06%  528152 313780 htsjdk.samtools.util.FastLineReader.readToEndOfOutputBufferOrEoln
+   6  1.37% 82.43% 1056300 313773 htsjdk.samtools.util.FastLineReader.atEoln
+   7  1.09% 83.51%  528152 313794 java.lang.Character.isWhitespace
+   8  1.06% 84.57%  528154 313774 htsjdk.samtools.util.FastLineReader.skipNewlines
+   9  0.68% 85.25%  528152 313793 java.lang.CharacterDataLatin1.isWhitespace
+  10  0.68% 85.93%  528146 313776 htsjdk.samtools.util.FastLineReader.peekByte
+  11  0.66% 86.59%  528152 313795 java.lang.Character.isWhitespace
+  12  0.64% 87.23% 1056356 313777 htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty
+  13  0.61% 87.84% 1056308 313771 htsjdk.samtools.util.FastLineReader.eof
+  14  0.61% 88.45% 1056300 313772 htsjdk.samtools.util.FastLineReader.ensureBufferNotEmpty
+  15  0.43% 88.88%   16572 313730 htsjdk.samtools.util.SamLocusIterator.next
+  16  0.32% 89.20%  536479 303687 java.lang.CharacterDataLatin1.getProperties
+  17  0.29% 89.49%  528152 313792 java.lang.CharacterData.of
+  18  0.29% 89.78%  528152 313781 htsjdk.samtools.util.StringUtil.byteToChar
+  19  0.28% 90.06%  528146 313775 htsjdk.samtools.util.FastLineReader.eof
+  20  0.23% 90.30%   16550 314053 picard.analysis.CollectWgsMetrics$WgsMetricsCollector.addInfo
+  21  0.15% 90.44%   16572 313722 htsjdk.samtools.util.SamLocusIterator.createNextUncoveredLocusInfo
+  22  0.15% 90.59%   33100 314033 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getRecordAndPositions
+  23  0.14% 90.73%   33100 314032 java.util.Collections.unmodifiableList
+  24  0.14% 90.87%   16550 314038 java.util.HashMap.<init>
+  25  0.13% 91.00%   33100 314031 java.util.Collections$UnmodifiableRandomAccessList.<init>
+  26  0.13% 91.12%   16572 313685 htsjdk.samtools.util.LocusComparator.compare
+  27  0.12% 91.24%   16550 314042 java.util.Collections$UnmodifiableCollection$1.<init>
+  28  0.12% 91.37%   16572 313726 htsjdk.samtools.util.SamLocusIterator.populateCompleteQueue
+  29  0.12% 91.49%   20328 303547 java.util.zip.ZipFile$ZipEntryIterator.next
+  30  0.12% 91.60%   33100 314030 java.util.Collections$UnmodifiableList.<init>
+  31  0.11% 91.71%   19209 307778 java.util.ArrayList$Itr.<init>
+  32  0.10% 91.81%   33144 313689 java.util.ArrayList.get
+  33  0.10% 91.92%   16572 313735 htsjdk.samtools.util.SamLocusIterator.hasNext
+  34  0.10% 92.01%   49719 313699 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex
+  35  0.09% 92.11%   16573 313712 htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.get
+  36  0.09% 92.20%       5 309986 sun.nio.ch.FileDispatcherImpl.close
+  37  0.09% 92.29%   20328 303544 java.util.zip.ZipFile.getZipEntry
+  38  0.09% 92.39%     810 302510 java.lang.ClassLoader.defineClass
+  39  0.09% 92.48%   16573 313618 java.util.ArrayList.get
+  40  0.09% 92.56%   16572 313697 htsjdk.samtools.util.LocusComparator.compare
+  41  0.09% 92.65%   20328 303542 java.util.zip.ZipCoder.toString
+  42  0.09% 92.74%   16550 314040 java.util.HashSet.<init>
+  43  0.09% 92.83%   66288 313591 java.util.ArrayList.isEmpty
+  44  0.09% 92.91%   33144 313679 java.util.ArrayList.get
+  45  0.08% 93.00%   16573 313703 htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.getMaxSequenceIndex
+  46  0.08% 93.08%   16550 314035 java.util.Collections$UnmodifiableCollection.size
+  47  0.07% 93.15%   16572 313718 htsjdk.samtools.util.SamLocusIterator.getReferenceSequence
+  48  0.07% 93.22%   17212 314026 java.util.ArrayList$Itr.hasNext
+  49  0.07% 93.29%       1 303580 picard.cmdline.ClassFinder.scanJar
+  50  0.07% 93.36%   16572 313741 htsjdk.samtools.util.SamLocusIterator.next
+  51  0.07% 93.42%   16572 313716 htsjdk.samtools.SAMSequenceDictionary.getSequence
+  52  0.06% 93.48%   16573 313706 htsjdk.samtools.SAMSequenceDictionary.size
+  53  0.06% 93.55%   16572 313734 java.util.ArrayList.add
+  54  0.06% 93.61%   16550 314051 java.util.concurrent.atomic.AtomicLongArray.getAndAdd
+  55  0.06% 93.67%   16573 313708 java.util.ArrayList.get
+  56  0.06% 93.73%     662 314060 picard.analysis.CollectWgsMetrics$1.run
+  57  0.06% 93.79%      54 311191 sun.nio.ch.FileDispatcherImpl.read
+  58  0.06% 93.85%   16550 314029 java.util.ArrayList$Itr.next
+  59  0.06% 93.90%   16550 314049 java.util.concurrent.atomic.AtomicLongArray.checkedByteOffset
+  60  0.05% 93.96%   16550 314045 java.util.ArrayList$Itr.hasNext
+  61  0.05% 94.01%   16572 313724 java.util.ArrayList.ensureCapacityInternal
+  62  0.05% 94.07%   16573 313710 htsjdk.samtools.SAMFileHeader.getSequence
+  63  0.05% 94.12%   49719 313698 htsjdk.samtools.SAMSequenceRecord.getSequenceIndex
+  64  0.04% 94.16%   16550 314046 java.util.Collections$UnmodifiableCollection$1.hasNext
+  65  0.04% 94.20%   20328 303549 java.util.zip.ZipFile$ZipEntryIterator.nextElement
+  66  0.04% 94.25%   42930 301744 java.lang.String.startsWith
+  67  0.04% 94.29%   34898 307770 java.util.Collections$UnmodifiableCollection.<init>
+  68  0.04% 94.33%   20329 303513 java.util.zip.ZipFile$ZipEntryIterator.hasNext
+  69  0.04% 94.38%   49716 313736 java.util.ArrayList.isEmpty
+  70  0.04% 94.42%   16572 313681 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex
+  71  0.04% 94.46%   16550 314039 java.util.HashMap.<init>
+  72  0.04% 94.50%   16572 313733 java.util.ArrayList.ensureCapacityInternal
+  73  0.04% 94.54%   16572 313720 java.util.ArrayList.<init>
+  74  0.04% 94.59%   33144 313677 java.util.ArrayList.rangeCheck
+  75  0.04% 94.63%     964 302489 java.lang.ClassLoader.loadClass
+  76  0.04% 94.67%   33144 313688 java.util.ArrayList.elementData
+  77  0.04% 94.71%   16573 313713 htsjdk.samtools.util.WholeGenomeReferenceSequenceMask.nextPosition
+  78  0.04% 94.75%   16572 313729 java.util.ArrayList.remove
+  79  0.04% 94.79%    1638 314189 java.lang.ref.Finalizer.runFinalizer
+  80  0.04% 94.83%   20328 303552 java.lang.String.startsWith
+  81  0.04% 94.86%   43294 301743 java.lang.String.startsWith
+  82  0.03% 94.90%   33144 313686 java.util.ArrayList.isEmpty
+  83  0.03% 94.93%   16572 313719 java.util.AbstractList.<init>
+  84  0.03% 94.96%   16550 314043 java.util.Collections$UnmodifiableCollection.iterator
+  85  0.03% 95.00%   16572 313721 htsjdk.samtools.util.SamLocusIterator$LocusInfo.<init>
+  86  0.03% 95.03%   33146 313598 htsjdk.samtools.SAMRecord.getReferenceIndex
+  87  0.03% 95.06%   16572 313740 java.util.ArrayList.remove
+  88  0.03% 95.10%   16572 313725 java.util.ArrayList.add
+  89  0.03% 95.13%   16573 313709 htsjdk.samtools.SAMSequenceDictionary.getSequence
+  90  0.03% 95.16%   16573 313596 htsjdk.samtools.util.SamLocusIterator.samHasMore
+  91  0.03% 95.19%   20328 303535 java.nio.charset.CharsetDecoder.reset
+  92  0.03% 95.22%   20329 303511 java.util.zip.ZipFile.access$200
+  93  0.03% 95.25%   16550 314048 java.util.concurrent.atomic.AtomicLongArray.byteOffset
+  94  0.03% 95.29%   16572 313691 htsjdk.samtools.util.SamLocusIterator$LocusInfo.isEmpty
+  95  0.03% 95.32%   16550 314028 java.util.ArrayList.access$100
+  96  0.03% 95.35%   16573 313701 java.util.ArrayList.size
+  97  0.03% 95.38%   16573 313702 htsjdk.samtools.SAMSequenceDictionary.size
+  98  0.03% 95.41%   16571 313806 htsjdk.samtools.reference.ReferenceSequenceFileWalker.get
+  99  0.03% 95.44%   16572 313717 htsjdk.samtools.SAMFileHeader.getSequence
+ 100  0.03% 95.47%   16572 313715 htsjdk.samtools.SamReader$PrimitiveSamReaderToSamReaderAdapter.getFileHeader
+ 101  0.03% 95.50%   41207 312604 java.util.ArrayList.elementData
+ 102  0.03% 95.53%   16572 313694 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex
+ 103  0.03% 95.56%   33144 313678 java.util.ArrayList.elementData
+ 104  0.03% 95.59%   16572 313737 htsjdk.samtools.util.LocusImpl.<init>
+ 105  0.03% 95.62%      16 302575 java.util.concurrent.ConcurrentHashMap.transfer
+ 106  0.03% 95.65%   50836 311825 java.nio.HeapByteBuffer._get
+ 107  0.03% 95.68%   20328 303545 java.util.zip.ZipFile.access$900
+ 108  0.03% 95.70%   20329 303514 java.util.zip.ZipFile$ZipEntryIterator.hasMoreElements
+ 109  0.03% 95.73%     758 303698 sun.reflect.generics.parser.SignatureParser.parseIdentifier
+ 110  0.03% 95.76%   16550 314037 java.util.AbstractSet.<init>
+ 111  0.03% 95.78%   41207 312603 java.util.ArrayList.rangeCheck
+ 112  0.03% 95.81%    6272 312965 htsjdk.samtools.util.BinaryCodec.readByteBuffer
+ 113  0.02% 95.83%    1620 301751 sun.misc.URLClassPath.getResource
+ 114  0.02% 95.86%   20328 303541 java.lang.String.<init>
+ 115  0.02% 95.88%   16550 314044 java.util.ArrayList.access$100
+ 116  0.02% 95.91%   11727 311959 htsjdk.samtools.util.BlockCompressedInputStream.read
+ 117  0.02% 95.93%     810 302482 java.net.URLStreamHandler.toExternalForm
+ 118  0.02% 95.95%    1620 301420 java.lang.String.concat
+ 119  0.02% 95.98%   16550 314034 java.util.ArrayList.size
+ 120  0.02% 96.00%   20328 303536 java.nio.charset.CharsetDecoder.maxCharsPerByte
+ 121  0.02% 96.02%     868 313383 htsjdk.samtools.Cigar.isValid
+ 122  0.02% 96.04%   20328 303516 java.util.zip.ZipFile.access$200
+ 123  0.02% 96.07%   10530 301738 java.util.ArrayList.get
+ 124  0.02% 96.09%   16572 313743 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getSequenceIndex
+ 125  0.02% 96.11%    2709 302197 java.util.zip.Inflater.inflate
+ 126  0.02% 96.13%   16573 313617 java.util.ArrayList.size
+ 127  0.02% 96.16%     810 302512 java.net.URLClassLoader.defineClass
+ 128  0.02% 96.18%   10603 301737 java.util.ArrayList.elementData
+ 129  0.02% 96.20%   16571 313807 htsjdk.samtools.reference.ReferenceSequence.getBases
+ 130  0.02% 96.22%   16573 313602 htsjdk.samtools.SAMRecord.getReadFailsVendorQualityCheckFlag
+ 131  0.02% 96.24%   16573 313700 htsjdk.samtools.SAMFileHeader.getSequenceDictionary
+ 132  0.02% 96.26%   16575 312714 java.util.ArrayList.ensureExplicitCapacity
+ 133  0.02% 96.29%    1620 301759 java.net.URLClassLoader.findClass
+ 134  0.02% 96.31%     895 313496 htsjdk.samtools.SAMRecord.isValid
+ 135  0.02% 96.33%   16550 314036 java.util.AbstractCollection.<init>
+ 136  0.02% 96.35%   16572 313731 java.util.ArrayList.rangeCheckForAdd
+ 137  0.02% 96.37%   20328 303548 java.util.zip.ZipFile$ZipEntryIterator.nextElement
+ 138  0.02% 96.39%   16550 314052 java.util.concurrent.atomic.AtomicLongArray.getAndIncrement
+ 139  0.02% 96.41%    6324 311976 java.nio.Bits.getIntL
+ 140  0.02% 96.43%   16572 313732 java.util.ArrayList.ensureExplicitCapacity
+ 141  0.02% 96.45%   16573 313601 htsjdk.samtools.SAMRecord.getMappingQuality
+ 142  0.02% 96.47%   16573 313597 htsjdk.samtools.util.PeekableIterator.peek
+ 143  0.02% 96.50%     811 301967 java.net.URL.<init>
+ 144  0.02% 96.52%   11340 301740 sun.misc.URLClassPath.getNextLoader
+ 145  0.02% 96.54%   20328 303538 sun.nio.cs.UTF_8$Decoder.decode
+ 146  0.02% 96.56%    2430 301742 java.lang.String.endsWith
+ 147  0.02% 96.58%    8323 303689 java.lang.Character.isWhitespace
+ 148  0.02% 96.60%   16572 313723 java.util.ArrayList.ensureExplicitCapacity
+ 149  0.02% 96.62%     810 302022 java.net.URLClassLoader.getAndVerifyPackage
+ 150  0.02% 96.64%   16552 311038 java.util.AbstractMap.<init>
+ 151  0.02% 96.66%     809 302612 java.net.URLStreamHandler.hostsEqual
+ 152  0.02% 96.68%    1639 314174 java.lang.ref.Reference.tryHandlePending
+ 153  0.02% 96.70%   16575 312715 java.util.ArrayList.ensureCapacityInternal
+ 154  0.02% 96.72%   16573 313704 htsjdk.samtools.SAMFileHeader.getSequenceDictionary
+ 155  0.02% 96.74%   40656 303518 java.util.zip.ZipFile.access$400
+ 156  0.02% 96.75%   20328 303543 java.util.zip.ZipEntry.setExtra0
+ 157  0.02% 96.77%     868 313361 htsjdk.samtools.SAMUtils.getAlignmentBlocks
+ 158  0.02% 96.79%   10752 313196 java.nio.HeapByteBuffer.get
+ 159  0.02% 96.81%    6272 312971 htsjdk.samtools.util.BinaryCodec.readInt
+ 160  0.02% 96.82%    1792 313204 java.nio.ByteBuffer.get
+ 161  0.02% 96.84%   20328 303523 java.util.zip.ZipFile.access$500
+ 162  0.02% 96.86%    6272 312970 java.nio.HeapByteBuffer.getInt
+ 163  0.02% 96.87%     896 313429 htsjdk.samtools.SAMRecord.getAlignmentEnd
+ 164  0.01% 96.89%    1792 313209 htsjdk.samtools.BinaryTagCodec.readNullTerminatedString
+ 165  0.01% 96.90%     868 313403 htsjdk.samtools.SAMUtils.validateCigar
+ 166  0.01% 96.91%   20328 303524 java.util.zip.ZipEntry.<init>
+ 167  0.01% 96.93%   10659 302569 java.util.concurrent.ConcurrentHashMap.tabAt
+ 168  0.01% 96.94%    2688 312995 htsjdk.samtools.util.BinaryCodec.readByteBuffer
+ 169  0.01% 96.96%    2688 313003 java.nio.HeapByteBuffer.putShort
+ 170  0.01% 96.97%    7556 303693 java.lang.StringBuilder.append
+ 171  0.01% 96.98%   19209 307777 java.util.ArrayList$Itr.<init>
+ 172  0.01% 97.00%     811 301966 sun.net.www.protocol.jar.Handler.parseURL
+ 173  0.01% 97.01%    9720 301745 sun.misc.MetaIndex.mayContain
+ 174  0.01% 97.02%   49719 313594 java.util.ArrayList.isEmpty
+ 175  0.01% 97.03%   16575 312716 java.util.ArrayList.add
+ 176  0.01% 97.05%   33146 313599 java.lang.Integer.intValue
+ 177  0.01% 97.06%   20328 303546 java.util.zip.ZipFile.access$1000
+ 178  0.01% 97.07%   20328 303540 java.util.Arrays.copyOfRange
+ 179  0.01% 97.08%    2688 313010 htsjdk.samtools.util.BinaryCodec.readUShort
+ 180  0.01% 97.10%     896 313245 htsjdk.samtools.SAMRecord.isValidReferenceIndexAndPosition
+ 181  0.01% 97.11%   17212 314025 java.util.ArrayList.access$100
+ 182  0.01% 97.12%     964 301406 java.lang.ClassLoader.findBootstrapClassOrNull
+ 183  0.01% 97.13%    6272 312964 java.nio.Buffer.position
+ 184  0.01% 97.14%   16550 314041 java.util.ArrayList.iterator
+ 185  0.01% 97.16%   20328 303550 java.util.zip.ZipEntry.getName
+ 186  0.01% 97.17%   20329 303510 java.util.zip.ZipFile.ensureOpen
+ 187  0.01% 97.18%     833 301141 java.util.zip.ZipFile.access$1400
+ 188  0.01% 97.19%     896 313220 htsjdk.samtools.BinaryTagCodec.readTags
+ 189  0.01% 97.20%   20328 303525 java.util.zip.ZipCoder.isUTF8
+ 190  0.01% 97.21%     896 313075 htsjdk.samtools.BAMRecord.<init>
+ 191  0.01% 97.22%   16571 313907 java.util.ArrayList.size
+ 192  0.01% 97.24%    1622 301898 java.lang.Character.toLowerCase
+ 193  0.01% 97.25%    1880 302204 java.util.zip.InflaterInputStream.read
+ 194  0.01% 97.26%   16572 313683 htsjdk.samtools.util.SamLocusIterator$LocusInfo.getPosition
+ 195  0.01% 97.27%    1622 301954 java.lang.StringBuilder.append
+ 196  0.01% 97.28%       1 314271 sun.misc.Signal.dispatch
+ 197  0.01% 97.29%    2688 313001 java.nio.Bits.putShortL
+ 198  0.01% 97.31%   12709 311826 java.nio.Bits.makeInt
+ 199  0.01% 97.32%     662 314064 java.util.concurrent.FutureTask.set
+ 200  0.01% 97.33%   16573 313603 htsjdk.samtools.SAMRecord.getAlignmentStart
+ 201  0.01% 97.34%    2287 300286 java.lang.Math.min
+ 202  0.01% 97.35%   16676 313632 java.util.AbstractCollection.<init>
+ 203  0.01% 97.36%     771 302596 java.util.jar.Attributes.get
+ 204  0.01% 97.37%   10603 301736 java.util.ArrayList.rangeCheck
+ 205  0.01% 97.38%     868 313407 htsjdk.samtools.BAMRecord.getCigar
+ 206  0.01% 97.39%    1620 301752 java.net.URLClassLoader$1.run
+ 207  0.01% 97.40%     868 313428 htsjdk.samtools.Cigar.getReferenceLength
+ 208  0.01% 97.41%    2858 300039 java.lang.Math.min
+ 209  0.01% 97.42%   16572 313682 htsjdk.samtools.util.LocusImpl.getSequenceIndex
+ 210  0.01% 97.44%    1622 301894 java.lang.Character.toUpperCase
+ 211  0.01% 97.45%   16552 311039 java.lang.Float.isNaN
+ 212  0.01% 97.46%   20328 303515 java.util.zip.ZipFile.ensureOpen
+ 213  0.01% 97.47%   16572 313693 htsjdk.samtools.SAMSequenceRecord.getSequenceIndex
+ 214  0.01% 97.48%   16572 313695 htsjdk.samtools.util.LocusImpl.getPosition
+ 215  0.01% 97.49%    1622 301943 java.lang.String.indexOf
+ 216  0.01% 97.50%    1622 301953 java.lang.AbstractStringBuilder.append
+ 217  0.01% 97.51%     810 301996 java.util.HashMap.get
+ 218  0.01% 97.52%     664 314010 java.util.concurrent.ThreadPoolExecutor$Worker.tryRelease
+ 219  0.01% 97.53%   16572 313727 java.util.ArrayList.rangeCheck
+ 220  0.01% 97.54%   16572 313738 java.util.ArrayList.rangeCheck
+ 221  0.01% 97.55%   16572 313739 java.util.ArrayList.elementData
+ 222  0.01% 97.57%     644 303564 picard.cmdline.ClassFinder.toClassName
+ 223  0.01% 97.58%   16574 313805 htsjdk.samtools.reference.ReferenceSequence.getContigIndex
+ 224  0.01% 97.59%    2709 302195 java.util.zip.Inflater.ensureOpen
+ 225  0.01% 97.60%     118 301337 sun.misc.ASCIICaseInsensitiveComparator.compare
+ 226  0.01% 97.61%     810 302190 sun.misc.URLClassPath$JarLoader$2.getContentLength
+ 227  0.01% 97.62%    2717 301123 java.util.zip.ZStreamRef.address
+ 228  0.01% 97.63%     810 302061 java.net.URLClassLoader.definePackageInternal
+ 229  0.01% 97.64%     662 313912 java.util.concurrent.Semaphore$NonfairSync.tryAcquireShared
+ 230  0.01% 97.65%     273 302040 java.util.HashMap.get
+ 231  0.01% 97.66%    1982 313996 java.util.concurrent.locks.AbstractQueuedSynchronizer.getState
+ 232  0.01% 97.67%    1982 313999 java.util.concurrent.locks.AbstractQueuedSynchronizer.setState
+ 233  0.01% 97.68%     644 303559 java.util.Arrays.copyOfRange
+ 234  0.01% 97.69%   16572 313742 htsjdk.samtools.SAMSequenceRecord.getSequenceIndex
+ 235  0.01% 97.70%     810 302218 sun.misc.Resource.getBytes
+ 236  0.01% 97.71%    1623 301000 java.nio.DirectLongBufferU.ix
+ 237  0.01% 97.72%     810 302464 java.lang.String.lastIndexOf
+ 238  0.01% 97.73%    8327 303688 java.lang.CharacterDataLatin1.isWhitespace
+ 239  0.01% 97.74%     662 314015 java.util.concurrent.ThreadPoolExecutor$Worker.tryAcquire
+ 240  0.01% 97.75%    8323 303690 java.lang.Character.isWhitespace
+ 241  0.01% 97.76%   16550 314027 java.util.ArrayList$Itr.checkForComodification
+ 242  0.01% 97.77%     814 301101 java.lang.ref.Finalizer.register
+ 243  0.01% 97.78%     662 314054 java.util.concurrent.locks.AbstractQueuedSynchronizer.getState
+ 244  0.01% 97.79%    1595 300825 java.lang.String.charAt
+ 245  0.01% 97.80%       1 300804 java.lang.ClassLoader.findNative
+ 246  0.01% 97.81%    1622 301946 java.lang.String.endsWith
+ 247  0.01% 97.82%     810 302480 java.security.ProtectionDomain.getCodeSource
+ 248  0.01% 97.83%     809 302616 java.net.URL.equals
+ 249  0.01% 97.84%       2 309038 java.io.FileOutputStream.write
+ 250  0.01% 97.85%       1 309246 java.net.InetAddress.loadImpl
+ 251  0.01% 97.86%    1622 301923 java.lang.AbstractStringBuilder.ensureCapacityInternal
+ 252  0.01% 97.87%       2 310147 java.text.DigitList.<init>
+ 253  0.01% 97.88%       2 310464 java.lang.StringBuilder.toString
+ 254  0.01% 97.89%     662 314066 java.util.concurrent.ThreadPoolExecutor.afterExecute
+ 255  0.01% 97.90%   16572 313692 htsjdk.samtools.util.LocusImpl.getSequenceIndex
+ 256  0.01% 97.91%     341 301274 java.lang.String.charAt
+ 257  0.01% 97.92%     811 301900 java.lang.String.regionMatches
+ 258  0.01% 97.93%   16572 313684 htsjdk.samtools.util.LocusImpl.getPosition
+ 259  0.01% 97.95%     810 302529 java.nio.DirectLongBufferU.put
+ 260  0.01% 97.96%    3244 301892 java.lang.CharacterData.of
+ 261  0.01% 97.97%   10804 311966 java.io.DataInputStream.read
+ 262  0.01% 97.98%     662 314074 java.util.concurrent.locks.ReentrantLock$Sync.nonfairTryAcquire
+ 263  0.01% 97.99%    6087 312094 java.util.regex.Pattern$Slice.match
+ 264  0.01% 98.00%     810 301889 sun.net.www.ParseUtil.encodePath
+ 265  0.01% 98.01%       1 303453 java.net.URI$Parser.parseHierarchical
+ 266  0.01% 98.02%      35 312194 java.lang.String.substring
+ 267  0.01% 98.03%       1 312560 htsjdk.samtools.SAMTextHeaderCodec.decode
+ 268  0.01% 98.04%     810 301756 java.lang.Exception.<init>
+ 269  0.01% 98.05%       1 303229 java.lang.ClassLoader.getBootstrapResources
+ 270  0.01% 98.06%       1 312611 htsjdk.samtools.BAMFileReader.readHeader
+ 271  0.01% 98.07%     662 314091 java.util.concurrent.locks.AbstractQueuedSynchronizer.fullyRelease
+ 272  0.01% 98.08%     660 314121 java.util.concurrent.locks.AbstractOwnableSynchronizer.getExclusiveOwnerThread
+ 273  0.01% 98.09%     660 314132 java.util.concurrent.locks.ReentrantLock$Sync.isHeldExclusively
+ 274  0.01% 98.10%     660 314143 java.util.concurrent.locks.LockSupport.unpark
+ 275  0.01% 98.11%     660 314150 java.util.concurrent.LinkedBlockingQueue.signalNotEmpty
+ 276  0.01% 98.12%     660 314151 java.util.concurrent.LinkedBlockingQueue.offer
+ 277  0.01% 98.13%      93 303027 java.io.BufferedReader.readLine
+ 278  0.01% 98.14%     660 314168 java.util.concurrent.LinkedBlockingQueue.take
+ 279  0.01% 98.15%     660 314169 java.util.concurrent.ThreadPoolExecutor.getTask
+ 280  0.01% 98.16%    1638 314176 java.lang.ref.ReferenceQueue.enqueue
+ 281  0.01% 98.17%    1638 314181 java.lang.ref.ReferenceQueue.remove
+ 282  0.01% 98.18%    1638 314183 java.lang.ref.Finalizer.hasBeenFinalized
+ 283  0.01% 98.19%    2688 313007 java.nio.Bits.getIntL
+ 284  0.01% 98.20%       1 302640 java.lang.Class.getMethod0
+ 285  0.01% 98.21%    5376 313017 java.util.ArrayList.get
+ 286  0.01% 98.22%    2493 301481 java.lang.AbstractStringBuilder.append
+ 287  0.01% 98.23%     771 302619 java.lang.String.equals
+ 288  0.01% 98.24%    1637 314192 sun.misc.VM.addFinalRefCount
+ 289  0.01% 98.25%     964 301397 java.lang.ClassLoader.getClassLoadingLock
+ 290  0.01% 98.26%    1025 301395 java.lang.ClassLoader.findLoadedClass
+ 291  0.01% 98.27%     814 314195 java.util.zip.ZipFile$ZipFileInputStream.finalize
+ 292  0.01% 98.28%    1025 301387 java.util.concurrent.ConcurrentHashMap.putIfAbsent
+ 293  0.01% 98.29%     572 300358 java.lang.CharacterDataLatin1.toUpperCase
+ 294  0.01% 98.30%    2778 313285 java.nio.Bits.getIntL
+ 295  0.01% 98.31%    2709 302196 java.util.zip.ZStreamRef.address
+ 296  0.01% 98.32%     814 301109 java.util.WeakHashMap.expungeStaleEntries
+CPU TIME (ms) END
