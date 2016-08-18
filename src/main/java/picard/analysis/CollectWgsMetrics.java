@@ -259,7 +259,7 @@ public class CollectWgsMetrics extends CommandLineProgram {
         int COUNT_OF_PROCESSING_THREADS = 2;
         int COUNT_OF_SEMS = 5;
 
-        ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_PROCESSING_THREADS)
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_PROCESSING_THREADS);
 
         final Semaphore sem = new Semaphore(COUNT_OF_SEMS);
 
@@ -300,6 +300,9 @@ public class CollectWgsMetrics extends CommandLineProgram {
             pairs = new ArrayList<>(COUNT_OF_PAIRS);
         }
 
+        for (Object[] obj : pairs) {
+            collector.addInfo((SamLocusIterator.LocusInfo) obj[0], (ReferenceSequence) obj[1]);
+        }
 
         service.shutdown();
 
